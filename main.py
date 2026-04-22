@@ -10,9 +10,6 @@ from models import Base
 from database import get_db
 from models import Prediction
 
-
-
-
 # Create tables on startup
 Base.metadata.create_all(bind=engine)
 
@@ -28,7 +25,8 @@ def health():
 
 @app.get("/predictions")
 def get_predictions(db: Session = Depends(get_db)):
-    predictions = db.query(Prediction).all()
+    predictions = db.query(Prediction).order_by(Prediction.id.desc()).limit(50).all() 
+    #Equivalent to SELECT * FROM predictions ORDER BY id DESC LIMIT 50; in PostgreSQL
     return [
         {
             "id": p.id,
