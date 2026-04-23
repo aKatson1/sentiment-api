@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from database import Base
 
-# Formats tables. This can be done in SQL, but SQLalchemy.ORM is prefered. 
+# Formats tables. Can also be done in SQL.
 class Prediction(Base):
     __tablename__ = "predictions"
 

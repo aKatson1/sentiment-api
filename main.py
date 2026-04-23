@@ -26,7 +26,6 @@ def health():
 @app.get("/predictions")
 def get_predictions(db: Session = Depends(get_db)):
     predictions = db.query(Prediction).order_by(Prediction.id.desc()).limit(50).all() 
-    #Equivalent to SELECT * FROM predictions ORDER BY id DESC LIMIT 50; in PostgreSQL
     return [
         {
             "id": p.id,
@@ -41,17 +40,15 @@ def get_predictions(db: Session = Depends(get_db)):
 @app.post("/predict")
 def predict(request: PredictRequest, db: Session = Depends(get_db)):
     result = sentiment_pipeline(request.text)[0]
-    # Create database row (not saved yet)
+    # Create database row 
     prediction = Prediction(
         text=request.text,
         label=result["label"],
         score=result["score"]
     )
-    # Add it to the session (stage for saving)
+    # Save and write row to Postgres
     db.add(prediction)
-    # Commit (write to Postgres)
     db.commit()
-    # Optional: refresh so Python gets updated data (like auto-generated id)
     db.refresh(prediction)
     return {
         "label": result["label"],
